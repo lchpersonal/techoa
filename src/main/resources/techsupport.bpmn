@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.activiti.org/processdef">
+
+    <process id="techsupport" isExecutable="true">
+        <startEvent id="start" name="开始" activiti:initiator="applyUserId"></startEvent>
+        <userTask id="tcSignUserTask" name="技术中心签收" activiti:candidateUsers="chenjiayao"></userTask>
+        <exclusiveGateway id="exclusiveGateway1"></exclusiveGateway>
+        <sequenceFlow id="flow1" sourceRef="tcSignUserTask" targetRef="exclusiveGateway1"></sequenceFlow>
+        <sequenceFlow id="applyRejectFlow" name="不同意" sourceRef="exclusiveGateway1" targetRef="modifyApply">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${handleResult == '3'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="applyPassFlow" name="同意" sourceRef="exclusiveGateway1" targetRef="completeUserTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${handleResult == '2'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="completeUserTask" name="完成任务"></userTask>
+        <userTask id="markUserTask" name="申请人评分" activiti:assignee="${applyUserId}"></userTask>
+
+        <userTask id="modifyApply" name="修改申请内容" activiti:assignee="${applyUserId}"></userTask>
+        <exclusiveGateway id="exclusiveGateway2"></exclusiveGateway>
+        <sequenceFlow id="modifyApplyFlow" sourceRef="modifyApply" targetRef="exclusiveGateway2"></sequenceFlow>
+        <sequenceFlow id="cancelApplyFlow" name="取消申请" sourceRef="exclusiveGateway2" targetRef="end">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reapply == 'false'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="reapplyFlow" name="重新申请" sourceRef="exclusiveGateway2" targetRef="tcSignUserTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reapply == 'true'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="markFlow" sourceRef="completeUserTask" targetRef="markUserTask"></sequenceFlow>
+        <endEvent id="end" name="结束"></endEvent>
+        <sequenceFlow id="endFlow" sourceRef="markUserTask" targetRef="end"></sequenceFlow>
+    </process>
+</definitions>

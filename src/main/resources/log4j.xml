@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{HH:mm:ss}][%-5p][%t]%C{1}.%M - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="ERROR"
+              class="com.baitian.fourb.common.log.log4j.BTDailyRollingFileAppender">
+        <param name="File" value="${log.home}/'yyyyMMdd'/cbs_mock.log"/>
+        <param name="DatePattern" value="'/../../'yyyyMMdd'/cbs_mock.log'"/>
+        <param name="Append" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="[%d{yyyy-MM-dd HH:mm:ss}][%t][%-5p] %C{1}.%M - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR"/>
+        </filter>
+    </appender>
+
+    <appender name="WARN"
+              class="com.baitian.fourb.common.log.log4j.BTDailyRollingFileAppender">
+        <param name="File" value="${log.home}/'yyyyMMdd'/cbs_mock_warn.log"/>
+        <param name="DatePattern" value="'/../../'yyyyMMdd'/cbs_mock_warn.log'"/>
+        <param name="Append" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="[%d{yyyy-MM-dd HH:mm:ss}][%t][%-5p] %C{1}.%M - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="WARN"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="DEBUG"
+              class="com.baitian.fourb.common.log.log4j.BTDailyRollingFileAppender">
+        <param name="File" value="${log.home}/'yyyyMMdd'/cbs_mock_debug.log"/>
+        <param name="DatePattern" value="'/../../'yyyyMMdd'/cbs_mock_debug.log'"/>
+        <param name="Append" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="[%d{yyyy-MM-dd HH:mm:ss}][%t][%-5p] %C{1}.%M - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+            <param name="LevelMax" value="INFO"/>
+        </filter>
+    </appender>
+
+    <appender name="PERF"
+              class="com.baitian.fourb.common.log.log4j.BTDailyRollingFileAppender">
+        <param name="File" value="${log.home}/'yyyyMMdd'/cbs_mock.perf"/>
+        <param name="DatePattern" value="'/../../'yyyyMMdd'/cbs_mock.perf'"/>
+        <param name="Append" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{HH:mm:ss}]%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- 性能监控日志 -->
+    <category name="com.baitian.fourb.common.monitor" additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="PERF"/>
+        <appender-ref ref="ERROR"/>
+    </category>
+
+    <category name="com.baitian.fourb" additivity="false">
+        <priority value="${cbs_mock.log.priority}"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="WARN"/>
+        <appender-ref ref="DEBUG"/>
+        <appender-ref ref="STDOUT"/>
+    </category>
+
+   	<!-- root结点放在后面比较，不然会有warn信息 -->
+    <root>
+        <priority value="WARN"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="WARN"/>
+        <appender-ref ref="DEBUG"/>
+    </root>
+</log4j:configuration>
