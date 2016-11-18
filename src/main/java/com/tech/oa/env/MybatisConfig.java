@@ -35,9 +35,9 @@ public class MybatisConfig {
         MybatisInitializationBean bean = new MybatisInitializationBean();
         bean.setDbs("oa_test");//这里替换为当前站点用到的数据库
         bean.setDsFactoryBean("dataSourceFactory");
-        bean.setScanMapperPackage("com.activiti.demo");//记得替换包路径
+        bean.setScanMapperPackage("com.tech.oa");//记得替换包路径
+        bean.setMapperLocations("classpath*:com/tech/oa/**/*-mapper.xml");
         bean.setInterceptors(new MybatisMonitorInterceptor());
         return bean;
     }
-
 }

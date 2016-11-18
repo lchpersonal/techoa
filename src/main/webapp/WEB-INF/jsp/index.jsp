@@ -5,7 +5,7 @@
     <title></title>
 </head>
 <body>
-
+<%--
 <table>
     <tr>
         <td>类型:</td>
@@ -35,16 +35,12 @@
             <textarea id="reason" cols="20" rows="5">家里有事</textarea>
         </td>
     </tr>
-</table>
-<input type="button" id="submit" value="提交"/>
+</table>--%>
+<input type="button" id="apply" value="技术支持申请"/>
 <script type="text/javascript">
-    $("#submit").click(function (e) {
-        var type = $("#type").val();
-        var startTime = $("#startTime").val();
-        var endTime = $("#endTime").val();
-        var reason = $("#reason").val();
-        $.post("/leave/apply.json",
-                {type: type, startTime: startTime, endTime: endTime, reason: reason},
+    $("#apply").click(function (e) {
+        $.post("/techsupport/apply.json",
+                {content: '新增技术支持申请'},
                 function (res) {
                     if (res.result.code == 0) {
                         alert("success");

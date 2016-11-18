@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/techsupport")
+@Transactional(rollbackFor = Exception.class)
 public class TechSupportController {
     @Autowired
     private TechSupportService techSupportService;
@@ -32,7 +33,6 @@ public class TechSupportController {
     private final Logger logger = LoggerFactory.getLogger(TechSupportController.class);
 
     @RequestMapping("/apply")
-    @Transactional(rollbackFor = Exception.class)
     public FbResult applyTechsupport(HttpServletRequest request, String content) {
         if (StringUtils.isEmpty(content)) {
             return FbResult.ERROR(ResultCodes.PARAM_EMPTY);
@@ -40,7 +40,25 @@ public class TechSupportController {
         String userId = SessionUtil.getUserId(request);
         try {
             int id = techSupportService.add(userId, content);
-            activitiTechSupportService.startNewProcess(id, userId);
+            String processId = activitiTechSupportService.startNewProcess(id, userId);
+            techSupportService.updateProcessId(id, processId);
+            return FbResult.SUCCESS();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("", e);
+            return FbResult.ERROR(ResultCodes.EXCEPTION);
+        }
+    }
+
+    @RequestMapping("/modifyApply")
+    public FbResult modifyApply(HttpServletRequest request, String content, int techsupportId, String taskId) {
+        if (StringUtils.isEmpty(content)) {
+            return FbResult.ERROR(ResultCodes.PARAM_EMPTY);
+        }
+        String userId = SessionUtil.getUserId(request);
+        try {
+            techSupportService.modify(techsupportId, content);
+            activitiTechSupportService.completeTheTask(taskId, userId);
             return FbResult.SUCCESS();
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,4 +81,18 @@ public class TechSupportController {
         return FbResult.SUCCESS();
     }
 
+    @RequestMapping("/commit")
+    public FbResult commit(String taskId, HttpServletRequest request) {
+        String userId = SessionUtil.getUserId(request);
+        activitiTechSupportService.completeTheTask(taskId, userId);
+        return FbResult.SUCCESS();
+    }
+
+    @RequestMapping("/mark")
+    public FbResult mark(String taskId, int techsupportId, int mark, HttpServletRequest request) {
+        String userId = SessionUtil.getUserId(request);
+        activitiTechSupportService.completeTheTask(taskId, userId);
+        techSupportService.mark(techsupportId, mark);
+        return FbResult.SUCCESS();
+    }
 }

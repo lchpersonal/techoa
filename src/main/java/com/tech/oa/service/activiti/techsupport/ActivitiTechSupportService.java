@@ -1,8 +1,5 @@
 package com.tech.oa.service.activiti.techsupport;
 
-import com.baitian.fourb.common.result.FbResult;
-import com.tech.oa.service.techsupport.TTechSupportTask;
-import com.tech.oa.service.techsupport.TechSupport;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -14,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by chengli on 2016/11/17.
@@ -38,7 +33,7 @@ public class ActivitiTechSupportService {
 
     @PostConstruct
     public void init() {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(PROCESS_KEY).singleResult();
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(PROCESS_KEY).singleResult();
         if (processDefinition == null) {
             repositoryService.createDeployment().addClasspathResource("techsupport.bpmn").deploy();
             System.out.println("techsupport 流程部署成功");
@@ -62,8 +57,15 @@ public class ActivitiTechSupportService {
         this.claim(taskId, userId);
         Map<String, Object> vars = new HashMap<>();
         vars.put("handleResult", String.valueOf(handleResult));
+        vars.put("handleUserId", userId);
         this.complete(taskId, vars);
     }
+
+    public void completeTheTask(String taskId, String userId) {
+        this.claim(taskId, userId);
+        this.complete(taskId, null);
+    }
+
 
     private void claim(String taskId, String userId) {
         taskService.claim(taskId, userId);

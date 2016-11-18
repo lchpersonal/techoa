@@ -16,29 +16,31 @@ public class TechSupportService {
 
     /** 新增技术支持申请 */
     public int add(String applyUserId, String content) {
-        return 0;
+        ApplyTechSupportParam param = new ApplyTechSupportParam(applyUserId, content);
+        techSupportMapper.add(param);
+        return param.getId();
     }
 
     /** 评分 */
     public void mark(int id, int mark) {
-
+        techSupportMapper.mark(id, mark);
     }
 
     /** 修改申请 */
     public void modify(int id, String content) {
-
+        techSupportMapper.modify(id, content);
     }
 
     public void updateProcessId(int id, String processId) {
-
+        techSupportMapper.updateProcessId(id, processId);
     }
 
     public void handleNewApplyTask(int id, String signUserId, int signResult) {
-
+        techSupportMapper.handleNewApplyTask(id, signUserId, signResult);
     }
 
     public List<TechSupport> queryByProcessIds(List<String> processIds) {
-        return null;
+        return techSupportMapper.queryByProcessIds(processIds);
     }
 
 }
